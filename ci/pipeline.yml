@@ -13,7 +13,7 @@ resources:
     bucket: {{aws-bucket}}
     regexp: release/pal-tracker-(.*).jar
     access_key_id: {{aws-access-key-id}}
-    secret_access_key: {{aws-secret-access-key-id}}
+    secret_access_key: {{aws-secret-access-key}}
 
 - name: version
   type: semver
@@ -39,7 +39,7 @@ resources:
     username: {{cf-username}}
     password: {{cf-password}}
     organization: {{cf-org}}
-    space: productiob
+    space: production
 
 jobs:
   - name: build
@@ -57,27 +57,27 @@ jobs:
       params:
         file: version/number
 
-- name: deploy-review
-  plan:
-  - get: pal-tracker
-  - get: pal-tracker-artifacts
-    trigger: true
-    passed: [build]
-  - put: review-deployment
-    params:
-      manifest: pal-tracker/manifest-review.yml
-      path: pal-tracker-artifacts/pal-tracker-*.jar
-      environment_variables:
-        WELCOME_MESSAGE: "Hellow from the review environment"
+  - name: deploy-review
+    plan:
+    - get: pal-tracker
+    - get: pal-tracker-artifacts
+      trigger: true
+      passed: [build]
+    - put: review-deployment
+      params:
+        manifest: pal-tracker/manifest-review.yml
+        path: pal-tracker-artifacts/pal-tracker-*.jar
+        environment_variables:
+          WELCOME_MESSAGE: "Hellow from the review environment"
 
-- name: deploy-production
-  plan:
-  - get: pal-tracker
-  - get: pal-tracker-artifacts
-    passed: [deploy-review]
-  - put: production-deployment
-    params:
-      manifest: pal-tracker/manifest-production.yml
-      path: pal-tracker-artifacts/pal-tracker-*.jar
-      environment_variables:
-        WELCOME_MESSAGE: "Hellow from production environment"
+  - name: deploy-production
+    plan:
+    - get: pal-tracker
+    - get: pal-tracker-artifacts
+      passed: [deploy-review]
+    - put: production-deployment
+      params:
+        manifest: pal-tracker/manifest-production.yml
+        path: pal-tracker-artifacts/pal-tracker-*.jar
+        environment_variables:
+          WELCOME_MESSAGE: "Hellow from production environment"
