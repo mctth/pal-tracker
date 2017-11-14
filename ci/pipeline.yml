@@ -18,16 +18,16 @@ resources:
 
 jobs:
   - name: build-and-deploy
-  plan:
-  - get: pal-tracker
-    trigger: true
-  - task: build and test
-    file: pal-tracker/ci/build.yml
-  - put: deploy
-    params:
-      manifest: pal-tracker/manifest.yml
-      path: build-output/pal-tracker.jar
-      environment_variables:
-        WELCOME_MESSAGE: "Hello from Concourse"
+    plan:
+    - get: pal-tracker
+      trigger: true
+    - task: build and test
+      file: pal-tracker/ci/build.yml
+    - put: deploy
+      params:
+        manifest: pal-tracker/manifest.yml
+        path: build-output/pal-tracker.jar
+        environment_variables:
+          WELCOME_MESSAGE: "Hello from Concourse"
 
 
